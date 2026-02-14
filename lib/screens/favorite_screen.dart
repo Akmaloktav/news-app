@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:news_app/themes/custom_appbar.dart';
+import 'package:news_app/widgets/custom_appbar.dart';
 import 'package:news_app/widgets/newest_news_card.dart';
 
 class FavoriteScreen extends StatelessWidget {
