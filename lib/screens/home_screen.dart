@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/themes/app_textstyle.dart';
-import 'package:news_app/themes/custom_appbar.dart';
+import 'package:news_app/widgets/custom_appbar.dart';
 import 'package:news_app/widgets/breaking_news_card.dart';
 import 'package:news_app/widgets/newest_news_card.dart';
 
