@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/screens/detail_news_screen.dart';
 import 'package:news_app/themes/app_textstyle.dart';
 import 'package:news_app/widgets/custom_appbar.dart';
 
@@ -71,57 +72,73 @@ class _HeadlineScreenState extends State<HeadlineScreen> {
           SliverList.builder(
             itemCount: 3,
             itemBuilder: (context, index) {
-              return Container(
-                padding: EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AspectRatio(
-                      aspectRatio: 16 / 8,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: NetworkImage(
-                              "https://upload.wikimedia.org/wikipedia/commons/f/fd/Jisoo_of_Blackpink_at_a_Dior_event%2C_April_18%2C_2025_%283%29.png",
-                            ),
-                            fit: BoxFit.cover,
-                          ),
-                          borderRadius: BorderRadius.circular(12.0),
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(28),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailNewsScreen(),
                         ),
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AspectRatio(
+                            aspectRatio: 16 / 8,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: NetworkImage(
+                                    "https://upload.wikimedia.org/wikipedia/commons/f/fd/Jisoo_of_Blackpink_at_a_Dior_event%2C_April_18%2C_2025_%283%29.png",
+                                  ),
+                                  fit: BoxFit.cover,
+                                ),
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 8.0),
+                          Text(
+                            'Name of publisher',
+                            style: AppTextstyle.getBaseTextTheme.bodyMedium,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(height: 8.0),
+                          Text(
+                            'News Title',
+                            style: AppTextstyle.getBaseTextTheme.titleMedium
+                                ?.copyWith(fontWeight: FontWeight.w600),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(height: 4.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Name of author',
+                                style: AppTextstyle.getBaseTextTheme.bodyMedium,
+                              ),
+                              Text(
+                                'Date of publisher',
+                                style: AppTextstyle.getBaseTextTheme.bodyMedium,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(height: 8.0),
-                    Text(
-                      'Name of publisher',
-                      style: AppTextstyle.getBaseTextTheme.bodyMedium,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(height: 8.0),
-                    Text(
-                      'News Title',
-                      style: AppTextstyle.getBaseTextTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w600),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(height: 4.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Name of author',
-                          style: AppTextstyle.getBaseTextTheme.bodyMedium,
-                        ),
-                        Text(
-                          'Date of publisher',
-                          style: AppTextstyle.getBaseTextTheme.bodyMedium,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
               );
             },
