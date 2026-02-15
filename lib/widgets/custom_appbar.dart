@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/screens/search_screen.dart';
 import 'package:news_app/themes/app_textstyle.dart';
 
 class CustomAppbar extends StatelessWidget {
@@ -7,7 +8,15 @@ class CustomAppbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      leading: Icon(Icons.search_outlined),
+      leading: IconButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => SearchScreen()),
+          );
+        },
+        icon: Icon(Icons.search_outlined),
+      ),
       title: Text("News App"),
       centerTitle: true,
       actions: [Icon(Icons.notifications_outlined)],
