@@ -3,7 +3,13 @@ import 'package:news_app/screens/detail_news_screen.dart';
 import 'package:news_app/themes/app_textstyle.dart';
 
 class NewestNewsCard extends StatelessWidget {
-  const NewestNewsCard({super.key});
+  final String title;
+  final String author;
+  final String url;
+  final String urlToImage;
+  final String publishedAt;
+  final String sourceName;
+  const NewestNewsCard({super.key, required this.title, required this.author, required this.url, required this.urlToImage, required this.publishedAt, required this.sourceName});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +55,7 @@ class NewestNewsCard extends StatelessWidget {
                         ],
                         image: DecorationImage(
                           image: NetworkImage(
-                            "https://upload.wikimedia.org/wikipedia/commons/f/fd/Jisoo_of_Blackpink_at_a_Dior_event%2C_April_18%2C_2025_%283%29.png",
+                            urlToImage,
                           ),
                           fit: BoxFit.cover,
                         ),
@@ -70,13 +76,13 @@ class NewestNewsCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Text(
-                            'Name of publisher',
+                            sourceName,
                             style: AppTextstyle.getBaseTextTheme.bodyMedium,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
-                            'News Title',
+                            title,
                             style: AppTextstyle.getBaseTextTheme.titleMedium
                                 ?.copyWith(fontWeight: FontWeight.w600),
                             maxLines: 2,
@@ -85,13 +91,13 @@ class NewestNewsCard extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                'Name of author',
+                                author,
                                 style: AppTextstyle.getBaseTextTheme.bodyMedium,
                               ),
                               SizedBox(width: 4),
                               Expanded(
                                 child: Text(
-                                  'Date of publisher',
+                                  publishedAt,
                                   style:
                                       AppTextstyle.getBaseTextTheme.bodyMedium,
                                   maxLines: 1,

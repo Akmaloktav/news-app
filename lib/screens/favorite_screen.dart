@@ -13,18 +13,22 @@ class FavoriteScreen extends StatelessWidget {
           CustomAppbar(),
           SliverToBoxAdapter(child: SizedBox(height: 16.0)),
           SliverPadding(
-              padding: EdgeInsets.only(
-                left: 8.0,
-                bottom: 8.0,
-                right: 8.0,
-              ),
-              sliver: SliverList.builder(
-                itemCount: 7,
-                itemBuilder: (BuildContext context, int index) {
-                  return NewestNewsCard();
-                },
-              ),
+            padding: EdgeInsets.only(left: 8.0, bottom: 8.0, right: 8.0),
+            sliver: SliverList.builder(
+              itemCount: 7,
+              itemBuilder: (BuildContext context, int index) {
+                return NewestNewsCard(
+                  title: "Untitled News",
+                  author: "Anonim",
+                  url: "newsData.url!",
+                  urlToImage:
+                      "https://via.assets.so/img.jpg?w=400&h=300&bg=e5e7eb&text=No+Image+Available&fontSize=24&f=png",
+                  publishedAt: "dateHour",
+                  sourceName: "no publisher",
+                );
+              },
             ),
+          ),
         ],
       ),
     );

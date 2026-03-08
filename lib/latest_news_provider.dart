@@ -5,10 +5,10 @@ import 'package:news_app/news_repository.dart';
 
 enum ResultState { loading, noData, hasData, error }
 
-class NewsProvider extends ChangeNotifier {
+class LatestNewsProvider extends ChangeNotifier {
   final NewsRepository repository;
 
-  NewsProvider({required this.repository});
+  LatestNewsProvider({required this.repository});
 
   ResultState _state = ResultState.noData;
   List<Articles> _articles = [];
@@ -18,12 +18,12 @@ class NewsProvider extends ChangeNotifier {
   List<Articles> get articles => _articles;
   String get message => _message;
 
-  Future<void> breakingNews() async {
+  Future<void> latestUpdatedNews() async {
     try {
       _state = ResultState.loading;
       notifyListeners();
 
-      final result = await repository.getBreakingNews();
+      final result = await repository.getLatestNews();
       if (result.isEmpty) {
         _state = ResultState.noData;
         _message = "Berita tidak ditemukan";

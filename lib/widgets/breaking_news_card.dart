@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:news_app/news_provider.dart';
+import 'package:news_app/breaking_news_provider.dart';
 import 'package:news_app/screens/detail_news_screen.dart';
 import 'package:news_app/themes/app_textstyle.dart';
 import 'package:provider/provider.dart';
@@ -26,13 +26,13 @@ class _BreakingNewsCardState extends State<BreakingNewsCard> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
 
-    return Consumer<NewsProvider>(
-      builder: (context, newsProvider, child) {
-        if (newsProvider.state == ResultState.loading) {
+    return Consumer<BreakingNewsProvider>(
+      builder: (context, breakingNewsProvider, child) {
+        if (breakingNewsProvider.state == ResultState.loading) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (newsProvider.state == ResultState.error ||
-            newsProvider.state == ResultState.noData) {
+        if (breakingNewsProvider.state == ResultState.error ||
+            breakingNewsProvider.state == ResultState.noData) {
           return Column(
             children: [
               SizedBox(
@@ -64,7 +64,7 @@ class _BreakingNewsCardState extends State<BreakingNewsCard> {
                         Icon(Icons.error, size: 70),
                         SizedBox(height: 10),
                         Text(
-                          newsProvider.message,
+                          breakingNewsProvider.message,
                           maxLines: 2,
                           style: AppTextstyle.getBaseTextTheme.labelMedium
                               ?.copyWith(fontSize: 14),
@@ -77,7 +77,7 @@ class _BreakingNewsCardState extends State<BreakingNewsCard> {
               SizedBox(height: 25),
             ],
           );
-          // return Center(child: Text(newsProvider.message));
+          // return Center(child: Text(breakingNewsProvider.message));
         }
 
         return Column(
@@ -85,10 +85,10 @@ class _BreakingNewsCardState extends State<BreakingNewsCard> {
             SizedBox(
               height: size.height * 0.32,
               child: PageView.builder(
-                itemCount: newsProvider.articles.length,
+                itemCount: breakingNewsProvider.articles.length,
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (context, index) {
-                  final newsData = newsProvider.articles[index];
+                  final newsData = breakingNewsProvider.articles[index];
                   DateTime utcDate = DateTime.parse(newsData.publishedAt!);
                   String dateOnly = DateFormat('yyyy-MM-dd').format(utcDate);
                   String hourOnly = DateFormat('HH:mm').format(utcDate);
@@ -118,7 +118,7 @@ class _BreakingNewsCardState extends State<BreakingNewsCard> {
                             image: DecorationImage(
                               image: NetworkImage(
                                 newsData.urlToImage ??
-                                    "https://placehold.co/600x400/e0e0e0/757575?text=No+Image+Available",
+                                    "https://via.assets.so/img.jpg?w=400&h=300&bg=e5e7eb&text=No+Image+Available&fontSize=24&f=png",
                               ),
                               fit: BoxFit.cover,
                               colorFilter: ColorFilter.mode(
@@ -228,7 +228,7 @@ class _BreakingNewsCardState extends State<BreakingNewsCard> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(
-                  newsProvider.articles.length,
+                  breakingNewsProvider.articles.length,
                   (index) => AnimatedContainer(
                     duration: Duration(microseconds: 700),
                     curve: Curves.easeIn,

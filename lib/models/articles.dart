@@ -23,7 +23,7 @@ class Articles {
 
   factory Articles.fromJson(Map<String, dynamic> jsonData) {
     return Articles(
-      source: Source.fromJson(jsonData),
+      source: Source.fromJson(jsonData["source"]),
       author: jsonData["author"],
       title: jsonData["title"],
       description: jsonData["description"],
