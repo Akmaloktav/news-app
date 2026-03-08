@@ -15,9 +15,35 @@ class NewsRepository {
     final response = ApiResponse.fromJson(data);
 
     if (response.status == "ok") {
+      return response.articles
+              ?.where((article) {
+                return article.url != null &&
+                    article.title != null &&
+                    article.urlToImage != null;
+              })
+              .take(7)
+              .toList() ??
+          [];
+    } else {
+      throw NewsException(
+        response.code ?? "unknown",
+        response.message ?? "Error",
+      );
+    }
+  }
+
+  Future<List<Articles>> getLatestNews() async {
+    final Map<String, dynamic> data = await _apiService.get("/v2/everything", {
+      "q": "latest OR update OR world OR news",
+      "sortBy": "publishedAt",
+    });
+
+    final response = ApiResponse.fromJson(data);
+
+    if (response.status == "ok") {
       return response.articles?.where((article) {
-            return article.url != null && article.title != null && article.urlToImage != null;
-          }).take(7).toList() ??
+            return article.title != null && article.url != null;
+          }).toList() ??
           [];
     } else {
       throw NewsException(

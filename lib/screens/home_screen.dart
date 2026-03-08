@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:news_app/latest_news_provider.dart';
 import 'package:news_app/themes/app_textstyle.dart';
 import 'package:news_app/widgets/custom_appbar.dart';
 import 'package:news_app/widgets/breaking_news_card.dart';
 import 'package:news_app/widgets/newest_news_card.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -55,10 +58,53 @@ class HomeScreen extends StatelessWidget {
                 bottom: 8.0,
                 right: 8.0,
               ),
-              sliver: SliverList.builder(
-                itemCount: 3,
-                itemBuilder: (BuildContext context, int index) {
-                  return NewestNewsCard();
+              sliver: Consumer<LatestNewsProvider>(
+                builder: (context, latestNewsProvider, child) {
+                  return SliverList.builder(
+                    itemCount: latestNewsProvider.articles.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (latestNewsProvider.state == ResultState.loading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (latestNewsProvider.state == ResultState.error ||
+                          latestNewsProvider.state == ResultState.noData) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.error, size: 70),
+                              SizedBox(height: 10),
+                              Text(
+                                latestNewsProvider.message,
+                                maxLines: 2,
+                                style: AppTextstyle.getBaseTextTheme.labelMedium
+                                    ?.copyWith(fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      final newsData = latestNewsProvider.articles[index];
+                      DateTime utcDate = DateTime.parse(newsData.publishedAt!);
+                      String dateOnly = DateFormat(
+                        'yyyy-MM-dd',
+                      ).format(utcDate);
+                      String hourOnly = DateFormat('HH:mm').format(utcDate);
+                      String dateHour = "$dateOnly $hourOnly";
+
+                      return NewestNewsCard(
+                        title: newsData.title ?? "Untitled News",
+                        author: newsData.author ?? "Anonim",
+                        url: newsData.url!,
+                        urlToImage:
+                            newsData.urlToImage ??
+                            "https://via.assets.so/img.jpg?w=400&h=300&bg=e5e7eb&text=No+Image+Available&fontSize=24&f=png",
+                        publishedAt: dateHour,
+                        sourceName: newsData.source.name ?? "no publisher",
+                      );
+                    },
+                  );
                 },
               ),
             ),

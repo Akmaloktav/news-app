@@ -67,45 +67,54 @@ class _SearchScreenState extends State<SearchScreen> {
 
   ListView resultSearch() {
     return ListView.builder(
-                  itemCount: 2,
-                  itemBuilder: (context, index) {
-                  return NewestNewsCard();
-                });
+      itemCount: 2,
+      itemBuilder: (context, index) {
+        return NewestNewsCard(
+          title: "Untitled News",
+          author: "Anonim",
+          url: "newsData.url!",
+          urlToImage:
+              "https://via.assets.so/img.jpg?w=400&h=300&bg=e5e7eb&text=No+Image+Available&fontSize=24&f=png",
+          publishedAt: "dateHour",
+          sourceName: "no publisher",
+        );
+      },
+    );
   }
 
   Align titleResultSearch() {
     return Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                    '"Result of search"',
-                    style: AppTextstyle.getBaseTextTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black,
-                    ),
-                  ),
-              );
+      alignment: Alignment.topLeft,
+      child: Text(
+        '"Result of search"',
+        style: AppTextstyle.getBaseTextTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: Colors.black,
+        ),
+      ),
+    );
   }
 
   Row recentSearchTitle() {
     return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Recent Search",
-                    style: AppTextstyle.getBaseTextTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black,
-                    ),
-                  ),
-                  Text(
-                    "Clear All",
-                    style: AppTextstyle.getBaseTextTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              );
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "Recent Search",
+          style: AppTextstyle.getBaseTextTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: Colors.black,
+          ),
+        ),
+        Text(
+          "Clear All",
+          style: AppTextstyle.getBaseTextTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: Colors.black,
+          ),
+        ),
+      ],
+    );
   }
 
   // ListView recentSearchMethod() {
