@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:news_app/breaking_news_provider.dart';
@@ -77,13 +78,12 @@ class _BreakingNewsCardState extends State<BreakingNewsCard> {
               SizedBox(height: 25),
             ],
           );
-          // return Center(child: Text(breakingNewsProvider.message));
         }
 
         return Column(
           children: [
             SizedBox(
-              height: size.height * 0.32,
+              height: size.height * 0.33,
               child: PageView.builder(
                 itemCount: breakingNewsProvider.articles.length,
                 scrollDirection: Axis.horizontal,
@@ -93,124 +93,142 @@ class _BreakingNewsCardState extends State<BreakingNewsCard> {
                   String dateOnly = DateFormat('yyyy-MM-dd').format(utcDate);
                   String hourOnly = DateFormat('HH:mm').format(utcDate);
 
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(28),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DetailNewsScreen(),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          margin: EdgeInsets.only(
-                            left: 8.0,
-                            right: 8.0,
-                            bottom: 8.0,
-                            top: 4.0,
+                  return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailNewsScreen(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(
+                        left: 8.0,
+                        right: 8.0,
+                        bottom: 8.0,
+                        top: 4.0,
+                      ),
+                      width: size.width,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(28),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black87,
+                            offset: Offset(0, 2),
+                            blurRadius: 2,
+                            spreadRadius: 0.2,
                           ),
-                          width: size.width,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: NetworkImage(
-                                newsData.urlToImage ??
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(28),
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: CachedNetworkImage(
+                                imageUrl: newsData.urlToImage!,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) =>
+                                    Center(child: CircularProgressIndicator()),
+                                errorWidget: (context, url, error) => ClipRRect(
+                                  borderRadius: BorderRadius.circular(28),
+                                  child: Image.network(
                                     "https://via.assets.so/img.jpg?w=400&h=300&bg=e5e7eb&text=No+Image+Available&fontSize=24&f=png",
-                              ),
-                              fit: BoxFit.cover,
-                              colorFilter: ColorFilter.mode(
-                                Colors.black.withOpacity(0.45),
-                                BlendMode.darken,
+                                  ),
+                                ),
                               ),
                             ),
-                            color: Colors.grey,
-                            borderRadius: BorderRadius.circular(28),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black87,
-                                offset: Offset(0, 2),
-                                blurRadius: 2,
-                                spreadRadius: 0.2,
-                              ),
-                            ],
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.only(
-                              left: 32.0,
-                              bottom: 32.0,
-                              right: 24,
-                            ),
-                            child: Align(
-                              alignment: Alignment.bottomLeft,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Flexible(
-                                        child: Text(
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          newsData.author ?? "Anonim",
-                                          style: AppTextstyle
-                                              .getBaseTextTheme
-                                              .labelMedium
-                                              ?.copyWith(color: Colors.white),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        "-",
-                                        style: AppTextstyle
-                                            .getBaseTextTheme
-                                            .labelMedium
-                                            ?.copyWith(color: Colors.white),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Expanded(
-                                        child: Text(
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          "$dateOnly $hourOnly",
-                                          style: AppTextstyle
-                                              .getBaseTextTheme
-                                              .labelMedium
-                                              ?.copyWith(color: Colors.white),
-                                        ),
-                                      ),
+                            Positioned.fill(
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                    colors: [
+                                      Colors.black.withOpacity(0.9),
+                                      Colors.transparent,
                                     ],
                                   ),
-                                  Text(
-                                    newsData.title ?? "Untitled News",
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: AppTextstyle
-                                        .getBaseTextTheme
-                                        .titleMedium
-                                        ?.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 20,
-                                        ),
-                                  ),
-                                  Text(
-                                    newsData.description ??
-                                        "There's no description available for this story. Tap to read the full article.",
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: AppTextstyle
-                                        .getBaseTextTheme
-                                        .bodyMedium
-                                        ?.copyWith(color: Colors.white),
-                                  ),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                left: 32.0,
+                                bottom: 32.0,
+                                right: 24,
+                              ),
+                              child: Align(
+                                alignment: Alignment.bottomLeft,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Flexible(
+                                          child: Text(
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            newsData.author ?? "Anonim",
+                                            style: AppTextstyle
+                                                .getBaseTextTheme
+                                                .labelMedium
+                                                ?.copyWith(color: Colors.white),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          "-",
+                                          style: AppTextstyle
+                                              .getBaseTextTheme
+                                              .labelMedium
+                                              ?.copyWith(color: Colors.white),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Expanded(
+                                          child: Text(
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            "$dateOnly $hourOnly",
+                                            style: AppTextstyle
+                                                .getBaseTextTheme
+                                                .labelMedium
+                                                ?.copyWith(color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Text(
+                                      newsData.title ?? "Untitled News",
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppTextstyle
+                                          .getBaseTextTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 20,
+                                          ),
+                                    ),
+                                    Text(
+                                      newsData.description ??
+                                          "There's no description available for this story. Tap to read the full article.",
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppTextstyle
+                                          .getBaseTextTheme
+                                          .bodyMedium
+                                          ?.copyWith(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
