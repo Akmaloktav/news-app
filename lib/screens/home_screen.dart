@@ -60,31 +60,37 @@ class HomeScreen extends StatelessWidget {
               ),
               sliver: Consumer<LatestNewsProvider>(
                 builder: (context, latestNewsProvider, child) {
+                  if (latestNewsProvider.state == ResultState.loading) {
+                    return SliverFillRemaining(
+                      child: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+                  if (latestNewsProvider.state == ResultState.error ||
+                      latestNewsProvider.state == ResultState.noData) {
+                    return SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.error, size: 70),
+                            SizedBox(height: 10),
+                            Text(
+                              latestNewsProvider.message,
+                              maxLines: 2,
+                              style: AppTextstyle.getBaseTextTheme.labelMedium
+                                  ?.copyWith(fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
                   return SliverList.builder(
                     itemCount: latestNewsProvider.articles.length,
                     itemBuilder: (BuildContext context, int index) {
-                      if (latestNewsProvider.state == ResultState.loading) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      if (latestNewsProvider.state == ResultState.error ||
-                          latestNewsProvider.state == ResultState.noData) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.error, size: 70),
-                              SizedBox(height: 10),
-                              Text(
-                                latestNewsProvider.message,
-                                maxLines: 2,
-                                style: AppTextstyle.getBaseTextTheme.labelMedium
-                                    ?.copyWith(fontSize: 14),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-
                       final newsData = latestNewsProvider.articles[index];
                       DateTime utcDate = DateTime.parse(newsData.publishedAt!);
                       String dateOnly = DateFormat(
@@ -103,6 +109,7 @@ class HomeScreen extends StatelessWidget {
                         publishedAt: dateHour,
                         sourceName: newsData.source.name ?? "no publisher",
                       );
+                      // },
                     },
                   );
                 },
