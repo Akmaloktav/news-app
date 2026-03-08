@@ -1,9 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:news_app/news_provider.dart';
+import 'package:news_app/news_repository.dart';
 import 'package:news_app/screens/main_screen.dart';
 import 'package:news_app/themes/app_theme.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(const NewsApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    throw Exception("Error loading .env file: $e");
+  }
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) =>
+              NewsProvider(repository: NewsRepository())..breakingNews(),
+        ),
+      ],
+      child: const NewsApp(),
+    ),
+  );
 }
 
 class NewsApp extends StatelessWidget {
