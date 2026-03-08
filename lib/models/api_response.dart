@@ -20,8 +20,8 @@ class ApiResponse {
       return ApiResponse(
         status: "ok",
         totalResults: jsonData["totalResults"],
-        articles: (jsonData["totalResults"] as List?)
-            ?.map((item) => Articles.fromJson(jsonData))
+        articles: (jsonData["articles"] as List?)
+            ?.map((item) => Articles.fromJson(item))
             .toList(),
       );
     } else {

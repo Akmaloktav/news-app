@@ -30,6 +30,7 @@ class Articles {
       url: jsonData["url"],
       urlToImage: jsonData["urlToImage"],
       content: jsonData["content"],
+      publishedAt: jsonData["publishedAt"],
     );
   }
 }
