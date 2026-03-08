@@ -50,6 +50,7 @@ class NewestNewsCard extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
+                    color: Colors.white.withOpacity(0.9),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey[700]!,
@@ -65,7 +66,7 @@ class NewestNewsCard extends StatelessWidget {
                       imageUrl: urlToImage,
                       fit: BoxFit.cover,
                       placeholder: (context, url) => Center(
-                        child: CircularProgressIndicator(color: Colors.white),
+                        child: CircularProgressIndicator(),
                       ),
                       errorWidget: (context, url, error) => Image.network(
                         "https://via.assets.so/img.jpg?w=400&h=300&bg=e5e7eb&text=No+Image+Available&fontSize=24&f=png",
