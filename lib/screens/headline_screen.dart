@@ -1,7 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:news_app/headline_news_provider.dart';
 import 'package:news_app/screens/detail_news_screen.dart';
 import 'package:news_app/themes/app_textstyle.dart';
 import 'package:news_app/widgets/custom_appbar.dart';
+import 'package:provider/provider.dart';
 
 class HeadlineScreen extends StatefulWidget {
   const HeadlineScreen({super.key});
@@ -12,17 +16,32 @@ class HeadlineScreen extends StatefulWidget {
 
 class _HeadlineScreenState extends State<HeadlineScreen> {
   final List<String> _selectCategory = [
-    'Sport',
-    'Art',
-    'Music',
-    'Religion',
-    'History',
-    'World',
+    'General',
+    'Sports',
+    'Business',
+    'Entertainment',
+    'Health',
+    'Science',
+    'Technology',
   ];
   int selectedIndex = 0;
 
   @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (mounted) {
+        context.read<HeadlineNewsProvider>().headlineNews(
+          _selectCategory[selectedIndex],
+        );
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final headlineProvider = context.watch<HeadlineNewsProvider>();
+
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -48,6 +67,9 @@ class _HeadlineScreenState extends State<HeadlineScreen> {
                             setState(() {
                               selectedIndex = value ? index : selectedIndex;
                             });
+                            context.read<HeadlineNewsProvider>().headlineNews(
+                              _selectCategory[selectedIndex],
+                            );
                           },
                           label: Text(_selectCategory[index]),
                           selected: selectedIndex == index,
@@ -69,80 +91,121 @@ class _HeadlineScreenState extends State<HeadlineScreen> {
             ),
           ),
           SliverToBoxAdapter(child: SizedBox(height: 4.0)),
-          SliverList.builder(
-            itemCount: 3,
-            itemBuilder: (context, index) {
-              return ClipRRect(
-                borderRadius: BorderRadius.circular(28),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailNewsScreen(),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AspectRatio(
-                            aspectRatio: 16 / 8,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: NetworkImage(
-                                    "https://upload.wikimedia.org/wikipedia/commons/f/fd/Jisoo_of_Blackpink_at_a_Dior_event%2C_April_18%2C_2025_%283%29.png",
-                                  ),
+          if (headlineProvider.state == ResultState.loading)
+            const SliverFillRemaining(
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else if (headlineProvider.state == ResultState.error ||
+              headlineProvider.state == ResultState.noData)
+            SliverFillRemaining(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error, size: 70),
+                    SizedBox(height: 10),
+                    Text(
+                      headlineProvider.message,
+                      maxLines: 2,
+                      style: AppTextstyle.getBaseTextTheme.labelMedium
+                          ?.copyWith(fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            SliverList.builder(
+              itemCount: headlineProvider.articles.length,
+              itemBuilder: (context, index) {
+                final newsData = headlineProvider.articles[index];
+                DateTime utcDate = DateTime.parse(
+                  newsData.publishedAt ?? DateTime.now().toIso8601String(),
+                );
+                String dateOnly = DateFormat('yyyy-MM-dd').format(utcDate);
+                String hourOnly = DateFormat('HH:mm').format(utcDate);
+                String dateHour = "$dateOnly $hourOnly";
+
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(28),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DetailNewsScreen(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AspectRatio(
+                              aspectRatio: 16 / 8,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(28),
+                                child: CachedNetworkImage(
+                                  imageUrl:
+                                      newsData.urlToImage ??
+                                      "https://via.assets.so/img.jpg?w=400&h=300&bg=e5e7eb&text=No+Image+Available&fontSize=24&f=png",
                                   fit: BoxFit.cover,
+                                  placeholder: (context, url) => Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  errorWidget: (context, url, error) => ClipRRect(
+                                    borderRadius: BorderRadius.circular(28),
+                                    child: Image.network(
+                                      "https://via.assets.so/img.jpg?w=400&h=300&bg=e5e7eb&text=No+Image+Available&fontSize=24&f=png",
+                                    ),
+                                  ),
                                 ),
-                                borderRadius: BorderRadius.circular(12.0),
                               ),
                             ),
-                          ),
-                          SizedBox(height: 8.0),
-                          Text(
-                            'Name of publisher',
-                            style: AppTextstyle.getBaseTextTheme.bodyMedium,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          SizedBox(height: 8.0),
-                          Text(
-                            'News Title',
-                            style: AppTextstyle.getBaseTextTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.w600),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          SizedBox(height: 4.0),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Name of author',
-                                style: AppTextstyle.getBaseTextTheme.bodyMedium,
-                              ),
-                              Text(
-                                'Date of publisher',
-                                style: AppTextstyle.getBaseTextTheme.bodyMedium,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ],
+                            SizedBox(height: 8.0),
+                            Text(
+                              newsData.source.name ?? "no publisher",
+                              style: AppTextstyle.getBaseTextTheme.bodyMedium,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: 8.0),
+                            Text(
+                              newsData.title ?? 'Untitled News',
+                              style: AppTextstyle.getBaseTextTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.w600),
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: 4.0),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  newsData.author ?? 'Anonim',
+                                  style:
+                                      AppTextstyle.getBaseTextTheme.bodyMedium,
+                                ),
+                                Text(
+                                  dateHour,
+                                  style:
+                                      AppTextstyle.getBaseTextTheme.bodyMedium,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
-          ),
+                );
+              },
+            ),
         ],
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:news_app/breaking_news_provider.dart';
+import 'package:news_app/headline_news_provider.dart';
 import 'package:news_app/latest_news_provider.dart';
 import 'package:news_app/news_repository.dart';
 import 'package:news_app/screens/main_screen.dart';
@@ -19,11 +20,16 @@ void main() async {
       providers: [
         ChangeNotifierProvider(
           create: (_) =>
-              BreakingNewsProvider(repository: NewsRepository())..breakingNews(),
+              BreakingNewsProvider(repository: NewsRepository())
+                ..breakingNews(),
         ),
         ChangeNotifierProvider(
           create: (_) =>
-              LatestNewsProvider(repository: NewsRepository())..latestUpdatedNews(),
+              LatestNewsProvider(repository: NewsRepository())
+                ..latestUpdatedNews(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => HeadlineNewsProvider(repository: NewsRepository()),
         ),
       ],
       child: const NewsApp(),
