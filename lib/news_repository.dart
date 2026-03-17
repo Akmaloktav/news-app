@@ -73,4 +73,25 @@ class NewsRepository {
       );
     }
   }
+
+  Future<List<Articles>> getSearchNews(String query) async {
+    final Map<String, dynamic> data = await _apiService.get("/v2/everything", {
+      "q": query,
+      "sortBy": "publishedAt",
+    });
+
+    final response = ApiResponse.fromJson(data);
+
+    if (response.status == "ok") {
+      return response.articles?.where((article) {
+            return article.title != null && article.url != null;
+          }).toList() ??
+          [];
+    } else {
+      throw NewsException(
+        response.code ?? "unknown",
+        response.message ?? "Error",
+      );
+    }
+  }
 }

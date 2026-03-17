@@ -5,6 +5,7 @@ import 'package:news_app/headline_news_provider.dart';
 import 'package:news_app/latest_news_provider.dart';
 import 'package:news_app/news_repository.dart';
 import 'package:news_app/screens/main_screen.dart';
+import 'package:news_app/search_news_provider.dart';
 import 'package:news_app/themes/app_theme.dart';
 import 'package:provider/provider.dart';
 
@@ -30,6 +31,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => HeadlineNewsProvider(repository: NewsRepository()),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SearchNewsProvider(repository: NewsRepository()),
         ),
       ],
       child: const NewsApp(),
