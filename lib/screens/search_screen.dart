@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/widgets/recent_search.dart';
+import 'package:news_app/search_news_provider.dart';
 import 'package:news_app/themes/app_textstyle.dart';
-import 'package:news_app/widgets/newest_news_card.dart';
+import 'package:news_app/widgets/result_search.dart';
+import 'package:provider/provider.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -10,8 +13,28 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  String searchQuery = "";
+  final FocusNode _focusNode = FocusNode();
   bool _isSearching = false;
-  bool _hasResult = false;
+  bool _showClearButton = false;
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(() {
+      setState(() {
+        _showClearButton = _controller.text.isNotEmpty;
+      });
+    });
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        setState(() {
+          _isSearching = false;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +54,21 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                   Expanded(
                     child: TextField(
+                      controller: _controller,
+                      textInputAction: TextInputAction.search,
+                      focusNode: _focusNode,
                       autofocus: true,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.search_outlined),
+                        suffixIcon: _showClearButton
+                            ? IconButton(
+                                icon: const Icon(Icons.clear),
+                                onPressed: () {
+                                  _controller.clear();
+                                  _focusNode.requestFocus();
+                                },
+                              )
+                            : null,
                         hintText: "Search About News...",
                         hintStyle: AppTextstyle.getBaseTextTheme.bodyLarge,
                         filled: true,
@@ -42,149 +77,40 @@ class _SearchScreenState extends State<SearchScreen> {
                           borderSide: BorderSide.none,
                         ),
                       ),
+                      onSubmitted: (value) {
+                        if (value.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Please enter a search keyword!"),
+                            ),
+                          );
+                          return;
+                        }
+
+                        _focusNode.unfocus();
+                        setState(() {
+                          _isSearching = true;
+                          searchQuery = value;
+                        });
+
+                        context.read<SearchNewsProvider>().searchNews(value);
+                      },
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 16.0),
-              Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: titleResultSearch(),
-              ),
-              SizedBox(height: 8.0),
               Expanded(
                 child: AnimatedSwitcher(
                   duration: Duration(milliseconds: 300),
-                  child: resultSearch(),
+                  child: _isSearching
+                      ? ResultSearch(query: searchQuery)
+                      : RecentSearch(),
                 ),
               ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  ListView resultSearch() {
-    return ListView.builder(
-      itemCount: 2,
-      itemBuilder: (context, index) {
-        return NewestNewsCard(
-          title: "Untitled News",
-          author: "Anonim",
-          url: "newsData.url!",
-          urlToImage:
-              "https://via.assets.so/img.jpg?w=400&h=300&bg=e5e7eb&text=No+Image+Available&fontSize=24&f=png",
-          publishedAt: "dateHour",
-          sourceName: "no publisher",
-        );
-      },
-    );
-  }
-
-  Align titleResultSearch() {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: Text(
-        '"Result of search"',
-        style: AppTextstyle.getBaseTextTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.w700,
-          color: Colors.black,
-        ),
-      ),
-    );
-  }
-
-  Row recentSearchTitle() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          "Recent Search",
-          style: AppTextstyle.getBaseTextTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: Colors.black,
-          ),
-        ),
-        Text(
-          "Clear All",
-          style: AppTextstyle.getBaseTextTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: Colors.black,
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ListView recentSearchMethod() {
-  //   return ListView.builder(
-  //     itemCount: 3,
-  //     itemBuilder: (context, index) {
-  //       return Container(
-  //         margin: EdgeInsets.only(bottom: 4.0),
-  //         decoration: BoxDecoration(
-  //           color: Colors.grey,
-  //           borderRadius: index == 0
-  //               ? BorderRadius.only(
-  //                   topLeft: Radius.circular(12),
-  //                   topRight: Radius.circular(12),
-  //                 )
-  //               : (index == 2
-  //                     ? BorderRadius.only(
-  //                         bottomLeft: Radius.circular(12),
-  //                         bottomRight: Radius.circular(12),
-  //                       )
-  //                     : BorderRadius.zero),
-  //         ),
-  //         child: Padding(
-  //           padding: const EdgeInsets.all(4.0),
-  //           child: Row(
-  //             crossAxisAlignment: CrossAxisAlignment.center,
-  //             children: [
-  //               Icon(Icons.timelapse_outlined),
-  //               SizedBox(width: 8.0),
-  //               Expanded(
-  //                 child: Text(
-  //                   "Lorem Ipsum Dolor amet site",
-  //                   style: AppTextstyle.getBaseTextTheme.bodyMedium,
-  //                   overflow: TextOverflow.ellipsis,
-  //                 ),
-  //               ),
-  //               SizedBox(width: 8.0),
-  //               IconButton(onPressed: () {}, icon: Icon(Icons.clear_outlined)),
-  //             ],
-  //           ),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
-  ListView recentSearchMethod() {
-    return ListView.builder(
-      itemCount: 3,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(Icons.timelapse_outlined),
-              SizedBox(width: 8.0),
-              Expanded(
-                child: Text(
-                  "Lorem Ipsum Dolor amet site",
-                  style: AppTextstyle.getBaseTextTheme.bodyMedium,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              SizedBox(width: 8.0),
-              IconButton(onPressed: () {}, icon: Icon(Icons.clear_outlined)),
-            ],
-          ),
-        );
-      },
     );
   }
 }
